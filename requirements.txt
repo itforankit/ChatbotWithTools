@@ -43,3 +43,6 @@ langchain-community
 mysql-connector-python 
 langgraph
 langchain_groq
+tiktoken
+langchain.tools
+pymupdf

@@ -1,6 +1,8 @@
 #setup pydantic model
 from pydantic import BaseModel
 from typing import List
+from fastapi import FastAPI
+from ai_agent import get_response_from_ai_agent
 
 class RequestState(BaseModel):
     model_name: str
@@ -8,14 +10,14 @@ class RequestState(BaseModel):
     system_prompt: str
     messages: List[str]
     allow_search: bool
+    pdf_assistant: bool
 
 
 
 
 
 #setup AI agent from frontend request
-from fastapi import FastAPI
-from ai_agent import get_response_from_ai_agent
+
 
 app = FastAPI(title="AI Agent")
 
@@ -36,7 +38,8 @@ def chat_endpoint(request: RequestState):
        query=request.messages,
        allow_search=request.allow_search,
        system_prompt=request.system_prompt,
-       provider=request.model_provider
+       provider=request.model_provider,
+       pdf_assistant=request.pdf_assistant
    )
    return response
 

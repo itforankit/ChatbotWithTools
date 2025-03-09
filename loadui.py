@@ -4,7 +4,11 @@ from datetime import date
 
 from langchain_core.messages import AIMessage,HumanMessage
 from uiconfigfile import Config
-from pdfassistant import get_pdf_text, get_text_chunks, get_vector_store, get_conversational_chain
+from PDFAssistant import PDFAssistant
+from dotenv import load_dotenv
+load_dotenv()
+
+OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
 
 class LoadStreamlitUI:
     def __init__(self):
@@ -64,12 +68,23 @@ class LoadStreamlitUI:
             self.user_controls["allow_web_search"]=allow_web_search
             
             st.write("📁 PDF File's Section")
-            pdf_docs = st.file_uploader("Upload your PDF Files & \n Click on the Submit & Process Button ", accept_multiple_files=True)
+            pdf_docs = st.file_uploader("Upload your PDF Files & \n Click on the Submit & Process Button ", accept_multiple_files=False)
+            print(pdf_docs)
             if st.button("Submit & Process"):
                     with st.spinner("Processing..."): # user friendly message.
-                        raw_text = get_pdf_text(pdf_docs) # get the pdf text
-                        text_chunks = get_text_chunks(raw_text) # get the text chunks
-                        get_vector_store(text_chunks) # create vector store
+                        #self.user_controls["text_chunks"] = PDFAssistant._extract_and_split_text(pdf_docs) # get the pdf text
+                        
+                        
+                        raw_text = PDFAssistant.get_pdf_text(pdf_docs) # get the pdf text
+                        text_chunks = PDFAssistant.get_text_chunks(raw_text) # get the text chunks
+                        assistant = PDFAssistant(OPENAI_API_KEY)  # Create an instance of the class
+                        self.user_controls["index"], self.user_controls["embeddings"] = assistant._create_vector_store(text_chunks)
+                        #self.user_controls["index"],self.user_controls["embeddings"]  = PDFAssistant._create_vector_store(text_chunks)
+                        #self.user_controls["index"], self.user_controls["embeddings"] = PDFAssistant._create_vector_store(text_chunks)
+                        #text_chunks = get_text_chunks(raw_text) # get the text chunks
+                        #PDFAssistant._create_vector_store(text_chunks) # create vector store
+                        #assistant = PDFAssistant(pdf_docs, openai_api_key)
+                        self.user_controls["pdf_assistant"]=True
                         st.success("Done")
             
             if "state" not in st.session_state:

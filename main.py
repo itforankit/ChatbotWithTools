@@ -50,6 +50,7 @@ def load_langgraph_agenticai_app():
                     return
                 
                 allow_web_search=user_input["allow_web_search"]
+                pdf_assistant = user_input.get("pdf_assistant", False) 
 
                 API_URL="http://127.0.0.1:9999/chat"
 
@@ -62,7 +63,8 @@ def load_langgraph_agenticai_app():
                         "model_provider": provider,
                         "system_prompt": "Agent",
                         "messages": [user_message],
-                        "allow_search": allow_web_search
+                        "allow_search": allow_web_search,
+                        "pdf_assistant": pdf_assistant
                             }
 
                     response=requests.post(API_URL, json=payload)
